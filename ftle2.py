@@ -20,9 +20,9 @@ def setup_grid(nx1, ny1, nz1, nx2, ny2, nz2):
     #y = yy[0, ny1:(ny2+1), 0]
     #z = zz[0, 0, nz1:(nz2+1)]
 
-    x = np.linspace(nx1, nx2-1, num=nx2-nx1)
-    y = np.linspace(ny1, ny2-1, num=ny2-ny1)
-    z = np.linspace(nz1, nz2-1, num=nz2-nz1)
+    x = np.linspace(nx1, nx2-1, num=nx2, endpoint=False)
+    y = np.linspace(ny1, ny2-1, num=ny2, endpoint=False)
+    z = np.linspace(nz1, nz2-1, num=nz2, endpoint=False)
 
     x, y, z = np.meshgrid(x, y, z, indexing='ij',sparse = True )
 
@@ -65,7 +65,8 @@ def interp(x1, x2, y1, y2, xm):
 # -----------------------------------------------------------------------------
 # interpolate velocity in space at all points
 def interpn_vel(velt, trajx, trajy, trajz):
-    points = np.transpose(np.array((trajx, trajy, trajz)), axes=[1,2,3,0])
+    points = np.stack((trajx.ravel(), trajy.ravel(), trajz.ravel()), axis=-1)
+    points = points.reshape(-1, 3)
     vx_in = interpn((x_data, y_data, z_data), velt[:,:,:,0], points, \
             method='linear', bounds_error=False)
     vy_in = interpn((x_data, y_data, z_data), velt[:,:,:,1], points, \
@@ -382,6 +383,9 @@ t_jump = 0
 
 # initialize trajectory data
 traj_x, traj_y, traj_z = np.meshgrid(x, y, z, indexing='ij', sparse = True)
+print(traj_x.shape)
+print(traj_y.shape)
+print(traj_z.shape)
 
 # initialize FTLE field
 ftle = np.zeros((ox,oy,oz))
