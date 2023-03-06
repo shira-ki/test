@@ -24,15 +24,15 @@ def setup_grid(nx1, ny1, nz1, nx2, ny2, nz2):
     y = np.linspace(ny1, ny2-1, num=ny2-ny1)
     z = np.linspace(nz1, nz2-1, num=nz2-nz1)
 
-    x, y, z = np.meshgrid(x, y, z, indexing='ij')
+    x, y, z = np.meshgrid(x, y, z, indexing='ij',sparse = True )
 
-    return x, y, z
+    return x.ravel(), y.ravel(), z.ravel()
 
 # -----------------------------------------------------------------------------
 # setup trajectory grid
 def setup_traj_grid(ox, oy, oz):
-    x = np.linspace(x_data[0], x_data[-1], ox)
-    z = np.linspace(z_data[0], z_data[-1], oz)
+    x = x_data
+    z = z_data
     y = y_data
 
     return (x, y, z)
@@ -366,7 +366,6 @@ method = 1
 # -----------------------------------------------------------------------------
 # setup data grid
 (x_data,y_data,z_data) = setup_grid(nx1, ny1, nz1, nx2, ny2, nz2)
-
 # setup trajectory grid
 ox = int(nx * scale[0])
 oy = int(ny * scale[1])
@@ -382,7 +381,7 @@ t_jump = 0
 (u,v,w) = read_data(t_start+t_jump+direction)
 
 # initialize trajectory data
-traj_x, traj_y, traj_z = np.meshgrid(x, y, z, indexing='ij')
+traj_x, traj_y, traj_z = np.meshgrid(x, y, z, indexing='ij', sparse = True)
 
 # initialize FTLE field
 ftle = np.zeros((ox,oy,oz))
