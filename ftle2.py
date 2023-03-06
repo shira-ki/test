@@ -20,9 +20,9 @@ def setup_grid(nx1, ny1, nz1, nx2, ny2, nz2):
     #y = yy[0, ny1:(ny2+1), 0]
     #z = zz[0, 0, nz1:(nz2+1)]
 
-    x = np.linspace(nx1, nx2-1, num=nx2, endpoint=False)
-    y = np.linspace(ny1, ny2-1, num=ny2, endpoint=False)
-    z = np.linspace(nz1, nz2-1, num=nz2, endpoint=False)
+    x = np.linspace(nx1, nx2-1, num=nx2+1, endpoint=False)
+    y = np.linspace(ny1, ny2-1, num=ny2+1, endpoint=False)
+    z = np.linspace(nz1, nz2-1, num=nz2+1, endpoint=False)
 
     x, y, z = np.meshgrid(x, y, z, indexing='ij',sparse = True )
 
@@ -86,7 +86,7 @@ def interpn_vel(velt, trajx, trajy, trajz):
     vx = vx_out * vx_out_pts + np.nan_to_num(vx_in) * np.invert(vx_out_pts)
     vy = vy_out * vy_out_pts + np.nan_to_num(vy_in) * np.invert(vy_out_pts)
     vz = vz_out * vz_out_pts + np.nan_to_num(vz_in) * np.invert(vz_out_pts)
-
+    
     return vx, vy, vz
 
 # -----------------------------------------------------------------------------
@@ -139,6 +139,10 @@ def update_traj(method):
 
     if (method == 1):
         (vx, vy, vz) = interpn_vel(velt, traj_x, traj_y, traj_z)
+        print("traj_x")
+        print(traj_x.shape)
+        print("vx")
+        print(vx.shape)
         traj_x += vx*delta*direction
         traj_y += vy*delta*direction
         traj_z += vz*delta*direction
@@ -367,6 +371,8 @@ method = 1
 # -----------------------------------------------------------------------------
 # setup data grid
 (x_data,y_data,z_data) = setup_grid(nx1, ny1, nz1, nx2, ny2, nz2)
+print("x_data")
+print(x_data.shape)
 # setup trajectory grid
 ox = int(nx * scale[0])
 oy = int(ny * scale[1])
@@ -382,10 +388,11 @@ t_jump = 0
 (u,v,w) = read_data(t_start+t_jump+direction)
 
 # initialize trajectory data
-traj_x, traj_y, traj_z = np.meshgrid(x, y, z, indexing='ij', sparse = True)
-print(traj_x.shape)
+traj_x, traj_y, traj_z = x_data, y_data, z_data
+print("traj_y")
 print(traj_y.shape)
-print(traj_z.shape)
+#print(traj_y.shape)
+#print(traj_z.shape)
 
 # initialize FTLE field
 ftle = np.zeros((ox,oy,oz))
